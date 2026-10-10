@@ -20,6 +20,7 @@ const PublicNavbar = () => {
           <Link to="/register" className={`nav-link ${isActive('/register') ? 'active' : ''}`}>Register</Link>
           <Link to="/signin" className={`nav-link ${isActive('/signin') ? 'active' : ''}`}>Sign In</Link>
           <Link to="/labour" className={`nav-link ${isActive('/labour') ? 'active' : ''}`}>Labour</Link>
+          <Link to="/admin/login" className={`nav-link ${isActive('/admin/login') ? 'active' : ''}`}>Admin</Link>
           <Link to="/contact" className={`nav-link ${isActive('/contact') ? 'active' : ''}`}>Contact</Link>
           <Link to="/faq" className={`nav-link ${isActive('/faq') ? 'active' : ''}`}>FAQ</Link>
           <Link to="/about" className={`nav-link ${isActive('/about') ? 'active' : ''}`}>About</Link>

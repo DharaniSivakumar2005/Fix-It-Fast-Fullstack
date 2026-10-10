@@ -14,46 +14,63 @@ const Navbar = () => {
   const isAdminArea = location.pathname.startsWith('/admin');
   const isLabourArea = location.pathname.startsWith('/labour');
 
-  // Decide which identity and logout to use, scoped to area to avoid cross-over
+  // Identify logged in user types properly
   const { user, logout } = useMemo(() => {
     try {
       if (isLabourArea) {
-        if (regularUser?.role === 'labour') return { user: regularUser, logout: regularLogout };
         const cached = JSON.parse(localStorage.getItem('labourUser') || 'null');
         if (cached) return { user: cached, logout: regularLogout };
-        if (regularUser?.role) return { user: regularUser, logout: regularLogout };
-        return { user: null, logout: regularLogout };
+        return { user: regularUser, logout: regularLogout };
       }
+
       if (isAdminArea) {
-        if (admin?.role === 'admin' || admin?.role === 'superadmin') return { user: admin, logout: adminLogout };
         const cached = JSON.parse(localStorage.getItem('adminUser') || 'null');
         if (cached) return { user: cached, logout: adminLogout };
-        return { user: null, logout: adminLogout };
+        return { user: admin, logout: adminLogout };
       }
-      if (regularUser && regularUser.role !== 'labour') return { user: regularUser, logout: regularLogout };
+
       const cached = JSON.parse(localStorage.getItem('user') || 'null');
-      return { user: cached, logout: regularLogout };
+      return { user: cached ?? regularUser, logout: regularLogout };
+
     } catch {
-      return { user: regularUser || admin || null, logout: admin ? adminLogout : regularLogout };
+      return { user: null, logout: regularLogout };
     }
   }, [isAdminArea, isLabourArea, regularUser, admin, regularLogout, adminLogout]);
 
-  const isActive = (path) => location.pathname === path;
-
+  // Logout Handler
   const handleLogout = () => {
-    logout();
-    navigate('/', { replace: true });
+    try {
+      logout();
+    } finally {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('labourToken');
+      localStorage.removeItem('user');
+      localStorage.removeItem('adminUser');
+      localStorage.removeItem('labourUser');
+
+      // Redirect Based on Who Logged Out
+      const redirectTo = isLabourArea ? '/labour/login'
+                        : isAdminArea ? '/admin/login'
+                        : '/login';
+
+      navigate(redirectTo, { replace: true });
+    }
   };
 
-  // Language selector removed per request
+  // Highlight Active Links
+  const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="app-nav">
       <div className="nav-inner">
+
+        {/* Brand Logo */}
         <Link to="/" className="brand" aria-label="Home">
-          <img src="/Images/LOGO.png" alt="Logo" className="brand-logo" onError={(e)=>{e.currentTarget.style.display='none'}} />
+          <img src="/Images/LOGO.png" alt="Logo" className="brand-logo" />
         </Link>
 
+        {/* NAVIGATION LINKS */}
         <div className="nav-links">
           {isLabourArea ? (
             <>
@@ -73,13 +90,6 @@ const Navbar = () => {
               <Link to="/admin/attendance" className={`nav-link ${isActive('/admin/attendance') ? 'active' : ''}`}>Attendance</Link>
               <Link to="/admin/profile" className={`nav-link ${isActive('/admin/profile') ? 'active' : ''}`}>Profile</Link>
               <Link to="/admin/feedback-report" className={`nav-link ${isActive('/admin/feedback-report') ? 'active' : ''}`}>Feedback Report</Link>
-              {user?.role === 'superadmin' && (
-                <>
-                  <Link to="/admin/super-dashboard" className={`nav-link ${isActive('/admin/super-dashboard') ? 'active' : ''}`}>Super Dashboard</Link>
-                  <Link to="/admin/users" className={`nav-link ${isActive('/admin/users') ? 'active' : ''}`}>Manage Users</Link>
-                  <Link to="/admin/admins" className={`nav-link ${isActive('/admin/admins') ? 'active' : ''}`}>Manage Admins</Link>
-                </>
-              )}
             </>
           ) : (
             <>
@@ -93,13 +103,13 @@ const Navbar = () => {
           )}
         </div>
 
+        {/* RIGHT SIDE: Theme + Welcome + Logout */}
         <div className="nav-actions">
           <ThemeSwitcher />
-          <span className="welcome">Welcome, {user?.name || 'Guest'}</span>
-          {user && (
-            <button onClick={handleLogout} className="btn-logout">Logout</button>
-          )}
+          {user && <span className="welcome">Welcome, {user.name}</span>}
+          {user && <button onClick={handleLogout} className="btn-logout">Logout</button>}
         </div>
+
       </div>
     </nav>
   );

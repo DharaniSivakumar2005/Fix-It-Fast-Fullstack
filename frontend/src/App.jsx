@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Layout Components
@@ -74,7 +74,7 @@ import StatusUpdateTest from './components/StatusUpdateTest';
 const Layout = ({ children }) => {
   const location = useLocation();
 
-  const pagesWithoutNavbar = ['/', '/signin', '/register'];
+  const pagesWithoutNavbar = ['/', '/signin', '/register', '/login'];
   const publicPages = ['/', '/about', '/contact', '/faq'];
   const minimalHeaderPages = ['/admin/login', '/admin/change-password', '/labour/login', '/labour'];
 
@@ -89,6 +89,7 @@ const Layout = ({ children }) => {
     '/',
     '/signin',
     '/register',
+    '/login',
     '/admin/login',
     '/admin/change-password',
     '/labour/login',
@@ -160,10 +161,11 @@ function App() {
                       <Route path="/about" element={<About />} />
                       <Route path="/contact" element={<Contact />} />
                       <Route path="/faq" element={<FAQ />} />
-
+                      
                       {/* Auth Routes */}
                       <Route path="/register" element={<Register />} />
                       <Route path="/signin" element={<SignIn />} />
+                      <Route path="/login" element={<Navigate to="/signin" replace />} />
                       <Route path="/forgot-password" element={<ForgotPassword />} />
                       <Route path="/reset-password" element={<ResetPassword />} />
                       <Route path="/auth/callback" element={<OAuthCallback />} />

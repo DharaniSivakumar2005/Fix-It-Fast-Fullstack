@@ -9,6 +9,7 @@
   border-bottom: 1px solid var(--border-color);
 }
 
+
 .nav-inner {
   max-width: 1280px;
   margin: 0 auto;
@@ -128,3 +129,19 @@
     padding: 3px;
   }
 }
+.btn-logout {
+  background: #e63946 !important;   /* Ensure visible in all themes */
+  color: #fff !important;
+  border: none;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.15s ease;
+}
+
+.btn-logout:hover {
+  background: #d62839 !important;
+  transform: translateY(-1px);
+}
+
